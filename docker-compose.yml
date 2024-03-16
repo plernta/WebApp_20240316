@@ -1,0 +1,40 @@
+services:
+
+  db:
+    image: postgres:16
+    environment: 
+      POSTGRES_DB: cool
+      POSTGRES_USER: cool
+      POSTGRES_PASSWORD: coolpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data 
+      #save data in "lib/postgresql/data", so not lose data when run
+
+  app:
+    build: ./src
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=cool
+      - DB_PASSWORD=coolpassword
+      - DB_DATABASE=cool
+
+  migrations:
+    build: ./migrations
+    platform: linux/amd64
+    depends_on:
+      - db
+      
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=cool
+      - DB_PASSWORD=coolpassword
+      - DB_DATABASE=cool
+
+volumes:
+  db_data:
